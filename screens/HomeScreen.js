@@ -26,8 +26,8 @@ export default class HomeScreen extends React.Component {
     };
 
     componentDidMount() {
-        this.getAllKeys()
-        this.getValueFunction()
+        this.getAllKeys();
+        this.getValueFunction();
     }
 
     getAllKeys = () => {
@@ -40,27 +40,23 @@ export default class HomeScreen extends React.Component {
                     let key = store[i][0];
                     let value = store[i][1];
 
-                    console.log("date="+store[i][0])
+                    console.log("date=" + store[i][0])
                 });
             });
         });
-    }
-
-
-    getValueFunction = () => {
-        //function to get the value from AsyncStorage
-        AsyncStorage.getItem(`${this.state.today}:first`).then(value =>
-                //AsyncStorage returns a promise so adding a callback to get the value
-                this.setState({first: value})
-            //Setting the value in Text
-        );
     };
 
-    saveData(text) {
-        this.setState({
-            first: text
-        })
-    }
+    getValueFunction = () => {
+        AsyncStorage.getItem(`${this.state.today}:first`).then(value =>
+            this.setState({first: value})
+        );
+        AsyncStorage.getItem(`${this.state.today}:second`).then(value =>
+            this.setState({second: value})
+        );
+        AsyncStorage.getItem(`${this.state.today}:third`).then(value =>
+            this.setState({third: value})
+        );
+    };
 
     constructor() {
         super();
@@ -75,46 +71,26 @@ export default class HomeScreen extends React.Component {
     }
 
     saveValueFunction = () => {
-        //function to save the value in AsyncStorage
         if (
             this.state.first ||
             this.state.second ||
             this.state.third
         ) {
-            console.log(`${this.state.today}:first`);
-            console.log(this.state.first);
-
             AsyncStorage.setItem(`${this.state.today}:first`, this.state.first);
-
-            //Setting a data to a AsyncStorage with respect to a key
-            this.setState({textInputData: ''});
-            //Resetting the TextInput
+            AsyncStorage.setItem(`${this.state.today}:second`, this.state.second);
+            AsyncStorage.setItem(`${this.state.today}:third`, this.state.third);
             alert('Data Saved');
-            //alert to confirm
         } else {
             alert('Please fill data');
-            //alert for the empty InputText
         }
-    }
+    };
 
     render() {
         return (
             <View style={styles.container}>
                 <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-                    {/*<View style={styles.welcomeContainer}>*/}
-                    {/*<Image*/}
-                    {/*source={*/}
-                    {/*__DEV__*/}
-                    {/*? require('../assets/images/robot-dev.png')*/}
-                    {/*: require('../assets/images/robot-prod.png')*/}
-                    {/*}*/}
-                    {/*style={styles.welcomeImage}*/}
-                    {/*/>*/}
-                    {/*</View>*/}
 
                     <View style={styles.getStartedContainer}>
-
-                        {/*{this._maybeRenderDevelopmentModeWarning()}*/}
 
                         <View>
                             <Text>3 strikes that you've done today:</Text>
@@ -124,10 +100,9 @@ export default class HomeScreen extends React.Component {
 
                         <MonoText>#1:</MonoText>
                         <AutoGrowingTextInput
-                            onChangeText={(text) => this.saveData(text)}
+                            onChangeText={(text) => this.setState({first: text})}
                             style={styles.textInput}
                             value={this.state.first}
-                            data-date={'2019-05-06'}
                             placeholder={'First of all, I ...'}
                         />
 
@@ -147,34 +122,18 @@ export default class HomeScreen extends React.Component {
                             placeholder={'At third, I ...'}
                         />
 
-                        {/*<View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>*/}
-                        {/*<MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>*/}
-                        {/*</View>*/}
-
-                        {/*<Text style={styles.getStartedText}>*/}
-                        {/*Change this text and your app will automatically reload.*/}
-                        {/*</Text>*/}
                     </View>
 
                     <Button title={'SAVE'} onPress={this.saveValueFunction}/>
 
-                    {/*<TouchableOpacity*/}
-                    {/*onPress={this.saveValueFunction}*/}
-                    {/*style={styles.button}>*/}
-                    {/*<Text style={styles.buttonText}>SAVE</Text>*/}
-                    {/*</TouchableOpacity>*/}
+                    {/*<View>*/}
+                    {/*<Text>First: {this.state.first}</Text>*/}
+                    {/*<Text>Second: {this.state.second}</Text>*/}
+                    {/*<Text>Third: {this.state.third}</Text>*/}
+                    {/*</View>*/}
 
-                    <View>
-                        <Text>First: {this.state.first}</Text>
-                        <Text>Second: {this.state.second}</Text>
-                        <Text>Third: {this.state.third}</Text>
-                    </View>
-
-                    <View style={styles.helpContainer}>
-                        {/*<TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>*/}
-                        {/*<Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>*/}
-                        {/*</TouchableOpacity>*/}
-                    </View>
+                    {/*<View style={styles.helpContainer}>*/}
+                    {/*</View>*/}
                 </ScrollView>
 
                 {/*<View style={styles.tabBarInfoContainer}>
@@ -245,13 +204,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
-    developmentModeText: {
-        marginBottom: 20,
-        color: 'rgba(0,0,0,0.4)',
-        fontSize: 14,
-        lineHeight: 19,
-        textAlign: 'center',
-    },
+    // developmentModeText: {
+    //     marginBottom: 20,
+    //     color: 'rgba(0,0,0,0.4)',
+    //     fontSize: 14,
+    //     lineHeight: 19,
+    //     textAlign: 'center',
+    // },
     contentContainer: {
         paddingTop: 30,
     },
