@@ -25,10 +25,20 @@ export default class LinksScreen extends React.Component {
         // console.log(yesterday);
 
         this.state = {
+            isLoading: false,
             today: yesterday,
             first: '',
             second: '',
             third: ''
+        }
+    }
+
+    componentWillUpdate(newState) {
+        if (newState.first) {
+            AsyncStorage.setItem(`${this.state.today}:first`, this.state.first);
+            // console.log(ewState.first)
+            console.log(`${this.state.today}:first`);
+            console.log(this.state.first);
         }
     }
 
@@ -39,7 +49,9 @@ export default class LinksScreen extends React.Component {
             this.state.third
         ) {
             if (this.state.first) {
-                AsyncStorage.setItem(`${this.state.today}:first`, this.state.first);
+                AsyncStorage.setItem(`${this.state.today}:first`, this.state.first).then((value) => {
+                    this.setState({isLoading: false})
+                });
             }
             if (this.state.second) {
                 AsyncStorage.setItem(`${this.state.today}:second`, this.state.second);
@@ -65,6 +77,29 @@ export default class LinksScreen extends React.Component {
         );
     };
 
+    async updateText(values) {
+        this.setState(values);
+        if (values.first && values.first.length > 0) {
+            this.setState({isLoading: true});
+            await AsyncStorage.setItem(`${this.state.today}:first`, this.state.first.toString()).then((value) => {
+                this.setState({isLoading: false})
+            });
+
+        }
+        if (values.second && values.second.length > 0) {
+            this.setState({isLoading: true});
+            await AsyncStorage.setItem(`${this.state.today}:second`, this.state.second.toString()).then((value) => {
+                this.setState({isLoading: false})
+            });
+        }
+        if (values.third && values.third.length > 0) {
+            this.setState({isLoading: true});
+            await AsyncStorage.setItem(`${this.state.today}:third`, this.state.third.toString()).then((value) => {
+                this.setState({isLoading: false})
+            });
+        }
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -80,7 +115,8 @@ export default class LinksScreen extends React.Component {
 
                         <MonoText>#1:</MonoText>
                         <AutoGrowingTextInput
-                            onChangeText={(text) => this.setState({first: text})}
+                            onChangeText={(text) => this.updateText({first: text})}
+                            // onChangeText={(text) => this.setState({first: text})}
                             style={styles.textInput}
                             value={this.state.first}
                             placeholder={'First of all, I ...'}
@@ -89,20 +125,30 @@ export default class LinksScreen extends React.Component {
                         <MonoText>#2:</MonoText>
                         <AutoGrowingTextInput
                             value={this.state.second}
-                            onChangeText={(text) => this.setState({second: text})}
+                            onChangeText={(text) => this.updateText({second: text})}
+                            // onChangeText={(text) => this.setState({second: text})}
                             style={styles.textInput}
                             placeholder={'Secondly, I ...'}
                         />
 
                         <MonoText>#3:</MonoText>
                         <AutoGrowingTextInput
-                            onChangeText={(text) => this.setState({third: text})}
+                            onChangeText={(text) => this.updateText({third: text})}
+                            // onChangeText={(text) => this.setState({third: text})}
                             style={styles.textInput}
                             value={this.state.third}
                             placeholder={'At third, I ...'}
                         />
 
-                        <Button title={'SAVE'} onPress={this.saveValueFunction}/>
+                        {this.state.isLoading ? <Text>loading...</Text> : <Text></Text>}
+                        
+                        {/*<Button title={'SAVE'} onPress={this.saveValueFunction}/>*/}
+
+                        {/*<View>*/}
+                        {/*<Text>First: {this.state.first}</Text>*/}
+                        {/*<Text>Second: {this.state.second}</Text>*/}
+                        {/*<Text>Third: {this.state.third}</Text>*/}
+                        {/*</View>*/}
 
                     </View>
 

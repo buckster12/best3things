@@ -40,7 +40,7 @@ export default class HomeScreen extends React.Component {
                     let key = store[i][0];
                     let value = store[i][1];
 
-                    console.log("date=" + store[i][0])
+                    // console.log("date=" + store[i][0])
                 });
             });
         });
