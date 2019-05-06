@@ -38,9 +38,15 @@ export default class LinksScreen extends React.Component {
             this.state.second ||
             this.state.third
         ) {
-            AsyncStorage.setItem(`${this.state.today}:first`, this.state.first);
-            AsyncStorage.setItem(`${this.state.today}:second`, this.state.second);
-            AsyncStorage.setItem(`${this.state.today}:third`, this.state.third);
+            if (this.state.first) {
+                AsyncStorage.setItem(`${this.state.today}:first`, this.state.first);
+            }
+            if (this.state.second) {
+                AsyncStorage.setItem(`${this.state.today}:second`, this.state.second);
+            }
+            if (this.state.third) {
+                AsyncStorage.setItem(`${this.state.today}:third`, this.state.third);
+            }
             alert('Data Saved');
         } else {
             alert('Please fill data');
