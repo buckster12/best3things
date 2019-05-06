@@ -79,20 +79,23 @@ export default class LinksScreen extends React.Component {
 
     async updateText(values) {
         this.setState(values);
-        if (values.first && values.first.length > 0) {
+
+        if (this.state.first) {
+            // if (this.state.first && this.state.first.length > 0 && this.state.first.toString()) {
             this.setState({isLoading: true});
             await AsyncStorage.setItem(`${this.state.today}:first`, this.state.first.toString()).then((value) => {
                 this.setState({isLoading: false})
             });
-
         }
-        if (values.second && values.second.length > 0) {
+        if (this.state.second) {
+            // if (values.second && values.second.length > 0) {
             this.setState({isLoading: true});
             await AsyncStorage.setItem(`${this.state.today}:second`, this.state.second.toString()).then((value) => {
                 this.setState({isLoading: false})
             });
         }
-        if (values.third && values.third.length > 0) {
+        if (this.state.third) {
+            // if (values.third && values.third.length > 0) {
             this.setState({isLoading: true});
             await AsyncStorage.setItem(`${this.state.today}:third`, this.state.third.toString()).then((value) => {
                 this.setState({isLoading: false})
@@ -141,7 +144,7 @@ export default class LinksScreen extends React.Component {
                         />
 
                         {this.state.isLoading ? <Text>loading...</Text> : <Text></Text>}
-                        
+
                         {/*<Button title={'SAVE'} onPress={this.saveValueFunction}/>*/}
 
                         {/*<View>*/}

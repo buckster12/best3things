@@ -13,6 +13,7 @@ import {WebBrowser} from 'expo';
 import {AutoGrowingTextInput} from 'react-native-autogrow-textinput';
 import {AsyncStorage} from 'react-native';
 import {Button} from 'react-native';
+import {Alert} from 'react-native';
 
 import {MonoText} from '../components/StyledText';
 
@@ -27,7 +28,7 @@ export default class HomeScreen extends React.Component {
 
     componentDidMount() {
         this.getAllKeys();
-        this.getValueFunction();
+        this.reloadValues();
     }
 
     getAllKeys = () => {
@@ -39,14 +40,12 @@ export default class HomeScreen extends React.Component {
                     // get at each store's key/value so you can work with it
                     let key = store[i][0];
                     let value = store[i][1];
-
-                    // console.log("date=" + store[i][0])
                 });
             });
         });
     };
 
-    getValueFunction = () => {
+    reloadValues = () => {
         AsyncStorage.getItem(`${this.state.today}:first`).then(value =>
             this.setState({first: value})
         );
@@ -63,13 +62,17 @@ export default class HomeScreen extends React.Component {
         let today = new Date().toJSON().slice(0, 10);
 
         this.state = {
+            isLoading: false,
             today: today,
             first: '',
             second: '',
             third: ''
-        }
+        };
+
+        this.clearAllData = this.clearAllData.bind(this);
     }
 
+    /*
     saveValueFunction = () => {
         if (
             this.state.first ||
@@ -90,6 +93,61 @@ export default class HomeScreen extends React.Component {
             alert('Please fill data');
         }
     };
+    */
+
+    async updateText(values) {
+        this.setState(values);
+
+        if (this.state.first) {
+            // if (this.state.first && this.state.first.length > 0 && this.state.first.toString()) {
+            this.setState({isLoading: true});
+            await AsyncStorage.setItem(`${this.state.today}:first`, this.state.first.toString()).then((value) => {
+                this.setState({isLoading: false})
+            });
+        }
+        if (this.state.second) {
+            // if (values.second && values.second.length > 0) {
+            this.setState({isLoading: true});
+            await AsyncStorage.setItem(`${this.state.today}:second`, this.state.second.toString()).then((value) => {
+                this.setState({isLoading: false})
+            });
+        }
+        if (this.state.third) {
+            // if (values.third && values.third.length > 0) {
+            this.setState({isLoading: true});
+            await AsyncStorage.setItem(`${this.state.today}:third`, this.state.third.toString()).then((value) => {
+                this.setState({isLoading: false})
+            });
+        }
+    }
+
+    clearAllData() {
+
+        Alert.alert('Are you sure?', 'This action remove all your data',
+            [
+                {
+                    text: 'No',
+                    onPress: () => {
+                        // console.log('Cancel Pressed')
+                    },
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes', onPress: () => {
+
+                        AsyncStorage.getAllKeys()
+                            .then(keys => AsyncStorage.multiRemove(keys))
+                            .then(() => {
+                                alert('success');
+                                this.reloadValues();
+                            });
+
+                    }
+                },
+            ],
+            {cancelable: true},
+        );
+    }
 
     render() {
         return (
@@ -106,7 +164,8 @@ export default class HomeScreen extends React.Component {
 
                         <MonoText>#1:</MonoText>
                         <AutoGrowingTextInput
-                            onChangeText={(text) => this.setState({first: text})}
+                            onChangeText={(text) => this.updateText({first: text})}
+                            // onChangeText={(text) => this.setState({first: text})}
                             style={styles.textInput}
                             value={this.state.first}
                             placeholder={'First of all, I ...'}
@@ -115,22 +174,31 @@ export default class HomeScreen extends React.Component {
                         <MonoText>#2:</MonoText>
                         <AutoGrowingTextInput
                             value={this.state.second}
-                            onChangeText={(text) => this.setState({second: text})}
+                            onChangeText={(text) => this.updateText({second: text})}
                             style={styles.textInput}
                             placeholder={'Secondly, I ...'}
                         />
 
                         <MonoText>#3:</MonoText>
                         <AutoGrowingTextInput
-                            onChangeText={(text) => this.setState({third: text})}
+                            onChangeText={(text) => this.updateText({third: text})}
                             style={styles.textInput}
                             value={this.state.third}
                             placeholder={'At third, I ...'}
                         />
 
+                        {this.state.isLoading ? <Text>loading...</Text> : <Text></Text>}
+
                     </View>
 
-                    <Button title={'SAVE'} onPress={this.saveValueFunction}/>
+                    {/*<Button title={'SAVE'} onPress={this.saveValueFunction}/>*/}
+
+                    <Button
+                        color={'red'}
+                        title={'Clear all data'}
+                        style={styles.clearButton}
+                        onPress={this.clearAllData}>
+                    </Button>
 
                     {/*<View>*/}
                     {/*<Text>First: {this.state.first}</Text>*/}
@@ -198,6 +266,11 @@ const styles = StyleSheet.create({
         width: 100,
         alignItems: 'center',
     },
+    clearButton: {
+        bottom: 10,
+        alignSelf: 'flex-end',
+        position: 'absolute',
+    },
     textInput: {
         height: 40,
         borderColor: 'gray',
@@ -208,6 +281,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+        flexDirection: 'column',
         backgroundColor: '#fff',
     },
     // developmentModeText: {
@@ -234,6 +308,8 @@ const styles = StyleSheet.create({
     },
     getStartedContainer: {
         alignItems: 'center',
+        // flex: 1,
+        // flexDirection: 'column',
         marginHorizontal: 50,
     },
     homeScreenFilename: {
